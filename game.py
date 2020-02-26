@@ -1,7 +1,8 @@
 import pygame
 from pygame.locals import *
 from map_attributes import Map
-
+from character import Character
+vector = pygame.math.Vector2
 import time
 
 class Game():
@@ -22,8 +23,9 @@ class Game():
 
         #self.node = Node(self, 500 ,600)
         self.map = Map(self)
+        print(self.map.wall_list)
         self.map.create_grid()
-
+        self.player = Character(self, 1, 2)
 
 
     def limit_on_screen(self, rect):
@@ -36,7 +38,7 @@ class Game():
         self.screen.fill(self.background_color)
         #self.node.update()
         self.map.update()
-       # self.player.update()
+        self.player.update()
 
 
 
@@ -45,28 +47,22 @@ class Game():
     def check_for_events(self):
         for event in pygame.event.get():
             e_type = event.type
-
-            if e_type == QUIT:
+            if e_type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    #self.player.current_dirrection = "LEFT"
+                    print('left')
+                    self.player.change_direction(vector(-1,0))
+                if event.key == pygame.K_RIGHT:
+                    #self.player.current_dirrection = "RIGHT"
+                    self.player.change_direction(vector(1,0))
+                if event.key == pygame.K_UP:
+                    #self.player.current_dirrection = "UP"
+                    self.player.change_direction(vector(0,-1))
+                if event.key == pygame.K_DOWN:
+                    #self.player.current_dirrection = "DOWN"
+                    self.player.change_direction(vector(0,1 ))
+            elif e_type == QUIT:
                 self.finished = True
-
-    def check_on_map(self):
-        collision = pygame.sprite.spritecollideany(self.player, self.map.nodes)
-        if collision:
-            print(collision)
-            node = collision
-            if self.player.current_dirrection == 'LEFT':
-                if not node.left:
-                    self.player.velocity = Vector()
-            if self.player.current_dirrection == 'RIGHT':
-                if not node.right:
-                    self.player.velocity = Vector()
-            if self.player.current_dirrection == 'UP':
-                if not node.up:
-                    self.player.velocity = Vector()
-            if self.player.current_dirrection == 'DOWN':
-                if not node.down:
-                    self.player.velocity = Vector()
-
 
 
     def run(self):
