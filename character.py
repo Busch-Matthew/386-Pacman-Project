@@ -23,9 +23,10 @@ class Character():
 
         self.can_move = True
 
-        print(self.coordinate)
-        print(self.position)
-        print(self.wall_list)
+
+        #print(self.coordinate)
+        #print(self.position)
+        #print(self.wall_list)
 
     def check_wall(self):
         for foo in range(0,len(self.wall_list)):

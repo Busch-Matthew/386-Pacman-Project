@@ -8,10 +8,8 @@ import time
 class Game():
 
     MOVE_SPEED = 2
-    WINDOW_HEIGHT = 1000
-    WINDOW_WIDTH = 1000
-    MAZE_WIDTH = 600
-    MAZE_HEIGHT = 800
+    WINDOW_HEIGHT = 800
+    WINDOW_WIDTH = 750
     LIVES = 3
 
     def __init__(self):
@@ -23,8 +21,6 @@ class Game():
 
         #self.node = Node(self, 500 ,600)
         self.map = Map(self)
-        print(self.map.wall_list)
-        self.map.create_grid()
         self.player = Character(self, 1, 2)
 
 
@@ -36,7 +32,7 @@ class Game():
 
     def update(self):
         self.screen.fill(self.background_color)
-        #self.node.update()
+
         self.map.update()
         self.player.update()
 
@@ -50,7 +46,6 @@ class Game():
             if e_type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     #self.player.current_dirrection = "LEFT"
-                    print('left')
                     self.player.change_direction(vector(-1,0))
                 if event.key == pygame.K_RIGHT:
                     #self.player.current_dirrection = "RIGHT"
