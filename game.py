@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from map_attributes import Map
 from character import Character
+from enemy import Enemy
 vector = pygame.math.Vector2
 import time
 
@@ -22,6 +23,7 @@ class Game():
         #self.node = Node(self, 500 ,600)
         self.map = Map(self)
         self.player = Character(self, 1, 2)
+        self.red = Enemy(self, 6 , 7)
 
 
     def limit_on_screen(self, rect):
@@ -31,12 +33,16 @@ class Game():
         rect.bottom = min(rect.bottom, self.WINDOW_WIDTH)
 
     def update(self):
-        self.screen.fill(self.background_color)
+        #self.screen.fill(self.background_color)
 
         self.map.update()
         self.player.update()
+        self.red.update(self.player.coordinate)
+        self.check_collisions()
 
-
+    def check_collisions(self):
+        pellet = pygame.sprite.spritecollideany(self.player, self.map.Pellets)
+        self.map.Pellets.remove(pellet)
 
 
 

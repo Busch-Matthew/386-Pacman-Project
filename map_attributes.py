@@ -3,9 +3,11 @@ from pygame.sprite import Sprite
 from pygame.locals import *
 vector = pygame.math.Vector2
 
+
 class Pellet(Sprite):
     IMAGE = pygame.transform.scale(pygame.image.load(f'images/RedGhostRight.png'), (25, 25))
     YELLOW = (255, 255,0)
+
     def __init__(self, game, map, position):
 
         super().__init__()
@@ -14,6 +16,7 @@ class Pellet(Sprite):
         self.map = map
         self.screen = game.screen
         self.position = position
+        self.rect = pygame.Rect((self.position),(2,2))
         #self.image = Pellet.IMAGE
         #self.rect = self.image.get_rect()
         #self.rect.topleft = self.position
@@ -28,6 +31,7 @@ class Map():
         self.game = game
         self.screen = game.screen
 
+        self.image = pygame.image.load('images/maze.bmp')
 
 
         self.right = self.zone.right
@@ -59,12 +63,14 @@ class Map():
 
 
 
-    def update(self):
 
+
+    def update(self):
+        self.screen.blit(self.image, self.zone)
         for pellet in self.Pellets.sprites():
             pellet.draw()
-        for foo in self.wall_list:
-            pygame.draw.rect(self.screen,(112,50,165), ((foo.x*25) + self.left, (foo.y*25) + self.top , 25,25) )
+    #    for foo in self.wall_list:
+        #    pygame.draw.rect(self.screen,(112,50,165), ((foo.x*25) + self.left, (foo.y*25) + self.top , 25,25) )
 
         pass
 
@@ -87,7 +93,7 @@ map_input = [   [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
                 [0,0,0,0,0,2,1,2,2,0,0,0,0,0,0,0,0,0,0,2,2,1,2,0,0,0,0,0],
                 [0,0,0,0,0,2,1,2,2,0,2,2,2,0,0,2,2,2,0,2,2,1,2,0,0,0,0,0],
                 [2,2,2,2,2,2,1,2,2,0,2,0,0,0,0,0,0,2,0,2,2,1,2,2,2,2,2,2],
-                [0,0,0,0,0,0,1,1,1,0,2,0,0,0,0,0,0,2,0,1,1,1,0,0,0,0,0,0],
+                [2,0,0,0,0,0,1,1,1,0,2,0,0,0,0,0,0,2,0,1,1,1,0,0,0,0,0,2],
                 [2,2,2,2,2,2,1,2,2,0,2,0,0,0,0,0,0,2,0,2,2,1,2,2,2,2,2,2],
                 [0,0,0,0,0,2,1,2,2,0,2,2,2,2,2,2,2,2,0,2,2,1,2,0,0,0,0,0],
                 [0,0,0,0,0,2,1,2,2,0,0,0,0,0,0,0,0,0,0,2,2,1,2,0,0,0,0,0],
