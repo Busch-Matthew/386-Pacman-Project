@@ -18,7 +18,7 @@ class Character(Sprite):
         self.coordinate = vector(startX, startY)
         self.position = vector((startX * self.map.cell_width) + self.map.left, (startY * self.map.cell_height) + self.map.top)
 
-        self.image = pygame.image.load(f'images/PacManRight.png')
+        self.image = pygame.image.load(f'images/PacManRight.bmp')
         self.image = pygame.transform.scale(self.image, (25, 25))
 
         self.rect = self.image.get_rect()

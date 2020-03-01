@@ -26,23 +26,27 @@ class Enemy(Sprite):
         self.coordinate = vector(startX, startY)
         self.position = vector((startX * self.map.cell_width) + self.map.left, (startY * self.map.cell_height) + self.map.top)
 
-        self.image = pygame.image.load(f'images/RedGhostRight.png')
+        self.image = pygame.image.load(f'images/RedGhostRight.bmp')
         self.image = pygame.transform.scale(self.image, (25, 25))
 
         self.rect = self.image.get_rect()
         self.rect.topleft = self.position
 
-        self.current_dirrection = vector(0,1)
+        self.current_dirrection = vector(0,0)
         #self.next_dirrection = vector(0,1)
 
         self.intersection_list = intersectionList
 
         self.can_move = True
+        self.chasing = True
+        self.shopping = False
+        self.spawning = False
+        self.returning = False
 
+        self.eatable = False
 
-        #print(self.coordinate)
-        #print(self.position)
-        #print(self.wall_list)
+        self.corner = vector(23,29)
+
 
     def check_wall(self):
         for foo in range(0,len(self.wall_list)):
@@ -53,10 +57,10 @@ class Enemy(Sprite):
     def draw(self):
         self.screen.blit(self.image, self.rect)
 
-    def update_direction(self, pac_pos):
+    def chase(self, pac_pos):
         goal = vector(pac_pos)
         if goal != self.coordinate:
-            visited = [vector(self.coordinate - 4 * self.current_dirrection), vector(self.coordinate)]
+            visited = [vector(self.coordinate - self.current_dirrection), vector(self.coordinate)]
             queue = []
             queue.append(Node(self.coordinate))
             searchPosition = vector(self.coordinate)
@@ -68,8 +72,6 @@ class Enemy(Sprite):
 
 
                 if node.position == vector(goal):
-                    #print("PAC FOUND")
-                    self.current_dirrection = vector(0,0)
                     while node.previous.previous != None:
                         move_list.append(vector(node.position))
                         node = node.previous
@@ -93,11 +95,53 @@ class Enemy(Sprite):
                         queue.append(Node(vector(node.position - vector(0,1)),node))
                         visited.append(vector(node.position - vector(0,1)))
 
-
-        #print(move_list[-1])
             if move_list != []:
                 self.current_dirrection = vector(move_list.pop() - self.coordinate)
 
+
+
+
+
+    def shop(self):
+        goal = self.corner
+        if goal != self.coordinate:
+            visited = [vector(self.coordinate - self.current_dirrection), vector(self.coordinate)]
+            queue = []
+            queue.append(Node(self.coordinate))
+            searchPosition = vector(self.coordinate)
+            count = 0
+            move_list = []
+
+            while queue != []:
+                node = queue.pop(0)
+
+
+                if node.position == vector(goal):
+                    while node.previous.previous != None:
+                        move_list.append(vector(node.position))
+                        node = node.previous
+                    break
+
+
+                if vector(node.position + vector(1,0)) not in self.wall_list:
+                    if vector(node.position + vector(1,0)) not in visited:
+                        queue.append(Node(vector(node.position + vector(1,0)),node))
+                        visited.append(vector(node.position + vector(1,0)))
+                if vector(node.position - vector(1,0)) not in self.wall_list:
+                    if vector(node.position - vector(1,0)) not in visited:
+                        queue.append(Node(vector(node.position + vector(-1,0)),node))
+                        visited.append(vector(node.position + vector(-1,0)))
+                if vector(node.position + vector(0,1)) not in self.wall_list:
+                    if vector(node.position + vector(0,1)) not in visited:
+                        queue.append(Node(vector(node.position + vector(0,1)),node))
+                        visited.append(vector(node.position + vector(0,1)))
+                if vector(node.position - vector(0,1)) not in self.wall_list:
+                    if vector(node.position - vector(0,1)) not in visited:
+                        queue.append(Node(vector(node.position - vector(0,1)),node))
+                        visited.append(vector(node.position - vector(0,1)))
+
+            if move_list != []:
+                self.current_dirrection = vector(move_list.pop() - self.coordinate)
 
     def check_wall(self):
         for foo in range(0,len(self.wall_list)):
@@ -106,16 +150,19 @@ class Enemy(Sprite):
         return True
 
     def move(self, pac_pos):
-            self.position +=  .25 * self.current_dirrection
-            self.rect.topleft = self.position
-            self.coordinate = (int((self.position.x - self.map.left)/ 25), int((self.position.y - self.map.top )/ 25))
-
+            if self.can_move:
+                self.position +=  .25 * self.current_dirrection
+                self.rect.topleft = self.position
+                self.coordinate = (int((self.position.x - self.map.left)/ 25), int((self.position.y - self.map.top )/ 25))
 
             if ((self.position.x - self.map.left) % 25  == 0) and ((self.position.y - self.map.top) % 25  == 0):
-                print(self.coordinate)
                 if self.coordinate in self.intersection_list:
-                    self.update_direction(pac_pos)
-        
+
+
+                    if self.chasing == True:
+                        self.chase(pac_pos)
+                    elif self.shopping == True:
+                        self.shop()
 
 
 

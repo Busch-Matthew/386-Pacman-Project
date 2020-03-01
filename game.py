@@ -22,8 +22,14 @@ class Game():
 
         #self.node = Node(self, 500 ,600)
         self.map = Map(self)
-        self.player = Character(self, 1, 2)
-        self.red = Enemy(self, 6 , 7)
+        self.player = Character(self, 13, 17)
+        self.red = Enemy(self, 12, 11)
+        self.red.chasing = False
+        self.red.shopping = True
+        self.yellow = Enemy(self, 1,1)
+        self.yellow.corner = vector(23,1)
+        self.yellow.chasing = False
+        self.yellow.shopping = True
 
 
     def limit_on_screen(self, rect):
@@ -38,6 +44,7 @@ class Game():
         self.map.update()
         self.player.update()
         self.red.update(self.player.coordinate)
+        self.yellow.update(self.player.coordinate)
         self.check_collisions()
 
     def check_collisions(self):
