@@ -26,20 +26,25 @@ class Game():
         self.player = Character(self, 13, 17)
         self.red = Enemy(self, 12, 11)
         self.red.corner = vector(23,29)
-        #self.red.chasing = False
-        #self.red.shopping = True
-        self.yellow = Enemy(self, 1,1)
+        self.red.chasing = True
+        self.red.spawning = False
+        self.yellow = Enemy(self, 14, 14, 25)
         self.yellow.corner = vector(23,1)
-    #   self.yellow.chasing = False
-        #self.yellow.shopping = True
-        self.blue = Enemy(self, 12,11)
+        self.yellow.spawning = True
+        self.yellow.current_dirrection = vector(-1,0)
+        self.blue = Enemy(self, 13,14, 52)
         self.blue.corner = vector(4,29)
-    #    self.blue.chasing = False
-        #self.blue.shopping = True
-        self.pink = Enemy(self, 12, 11)
+        self.blue.current_dirrection = vector(1,0)
+        self.pink = Enemy(self, 12, 14,89)
         self.pink.corner = vector(4,1)
-        #self.pink.chasing = False
-        #self.pink.shopping = True
+        self.pink.current_dirrection = vector(1,0)
+
+        self.Ghosts = pygame.sprite.Group()
+
+        self.Ghosts.add(self.red)
+        self.Ghosts.add(self.blue)
+        self.Ghosts.add(self.yellow)
+        self.Ghosts.add(self.pink)
 
         self.fps = pygame.time.Clock()
 
@@ -61,6 +66,10 @@ class Game():
     def check_collisions(self):
         pellet = pygame.sprite.spritecollideany(self.player, self.map.Pellets)
         self.map.Pellets.remove(pellet)
+
+        if pygame.sprite.spritecollideany(self.player, self.Ghosts):
+            print('COLLISION')
+
 
     def update_ghosts(self):
 
