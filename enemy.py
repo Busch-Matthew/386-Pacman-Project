@@ -47,6 +47,7 @@ class Enemy(Sprite):
 
         self.corner = vector(23,29)
 
+        self.steps = 0
 
     def check_wall(self):
         for foo in range(0,len(self.wall_list)):
@@ -150,19 +151,35 @@ class Enemy(Sprite):
         return True
 
     def move(self, pac_pos):
-            if self.can_move:
-                self.position +=  .25 * self.current_dirrection
-                self.rect.topleft = self.position
-                self.coordinate = (int((self.position.x - self.map.left)/ 25), int((self.position.y - self.map.top )/ 25))
+        if self.can_move:
+            self.position +=  .5 * self.current_dirrection
+            self.rect.topleft = self.position
+            self.coordinate = (int((self.position.x - self.map.left)/ 25), int((self.position.y - self.map.top )/ 25))
 
-            if ((self.position.x - self.map.left) % 25  == 0) and ((self.position.y - self.map.top) % 25  == 0):
-                if self.coordinate in self.intersection_list:
+        if ((self.position.x - self.map.left) % 25  == 0) and ((self.position.y - self.map.top) % 25  == 0):
+            self.steps += 1
+            if self.steps > 100:
+                self.swap_modes()
+            if self.coordinate in self.intersection_list:
+                print(self.chasing)
+                if self.chasing == True:
+                    self.chase(pac_pos)
+                elif self.shopping == True:
+                    self.shop()
 
+    def swap_modes(self):
+        self.steps = 0
+        self.current_dirrection = self.current_dirrection * -1
+    
+        if self.chasing is True:
+            self.chasing = False
+            self.shopping = True
+            return
+        if self.shopping is True:
+            self.shopping = False
+            self.chasing = True
+            return
 
-                    if self.chasing == True:
-                        self.chase(pac_pos)
-                    elif self.shopping == True:
-                        self.shop()
 
 
 
@@ -174,6 +191,7 @@ class Enemy(Sprite):
     def update(self, pac_pos):
         self.move(pac_pos)
         self.draw()
+
 
 intersectionList =[ vector(1,1), vector(1,5), vector(1,8), vector(6,1), vector(6,5), vector(6,8), vector(12,1), vector(12,5),
                     vector(21,1), vector(21,5), vector(21,8), vector(26,1), vector(26,5), vector(26,8), vector(15,1), vector(15,5),

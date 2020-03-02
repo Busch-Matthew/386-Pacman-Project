@@ -27,7 +27,7 @@ class Pellet(Sprite):
 class Map():
 
     def __init__(self, game):
-        self.zone = pygame.Rect(25, 20, 700, 775)
+        self.zone = pygame.Rect(25, 45, 700, 775)
         self.game = game
         self.screen = game.screen
 

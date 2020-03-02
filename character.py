@@ -31,7 +31,7 @@ class Character(Sprite):
 
         self.can_move = True
 
-
+        self.steps = 0
         #print(self.coordinate)
         #print(self.position)
         #print(self.wall_list)
@@ -52,7 +52,7 @@ class Character(Sprite):
 
         if self.can_move:
 
-            self.position +=  .5 * self.current_dirrection
+            self.position +=  self.current_dirrection
 
         self.rect.topleft = self.position
         self.coordinate = (int((self.position.x - self.map.left)/ 25), int((self.position.y - self.map.top )/ 25))
