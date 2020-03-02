@@ -1,15 +1,17 @@
 import pygame
 from pygame.locals import *
 from map_attributes import Map
+from pygame.time import Clock
 from character import Character
+
 from enemy import Enemy
 vector = pygame.math.Vector2
-import time
+
 
 class Game():
 
     MOVE_SPEED = 2
-    WINDOW_HEIGHT = 800
+    WINDOW_HEIGHT = 825
     WINDOW_WIDTH = 750
     LIVES = 3
 
@@ -20,16 +22,26 @@ class Game():
         self.background_color = (40, 40, 40)
         self.finished = False
 
-        #self.node = Node(self, 500 ,600)
         self.map = Map(self)
         self.player = Character(self, 13, 17)
         self.red = Enemy(self, 12, 11)
-        self.red.chasing = False
-        self.red.shopping = True
+        self.red.corner = vector(23,29)
+        #self.red.chasing = False
+        #self.red.shopping = True
         self.yellow = Enemy(self, 1,1)
         self.yellow.corner = vector(23,1)
-        self.yellow.chasing = False
-        self.yellow.shopping = True
+    #   self.yellow.chasing = False
+        #self.yellow.shopping = True
+        self.blue = Enemy(self, 12,11)
+        self.blue.corner = vector(4,29)
+    #    self.blue.chasing = False
+        #self.blue.shopping = True
+        self.pink = Enemy(self, 12, 11)
+        self.pink.corner = vector(4,1)
+        #self.pink.chasing = False
+        #self.pink.shopping = True
+
+        self.fps = pygame.time.Clock()
 
 
     def limit_on_screen(self, rect):
@@ -43,14 +55,22 @@ class Game():
 
         self.map.update()
         self.player.update()
-        self.red.update(self.player.coordinate)
-        self.yellow.update(self.player.coordinate)
+        self.update_ghosts()
         self.check_collisions()
 
     def check_collisions(self):
         pellet = pygame.sprite.spritecollideany(self.player, self.map.Pellets)
         self.map.Pellets.remove(pellet)
 
+    def update_ghosts(self):
+
+        self.red.update(self.player.coordinate)
+
+        self.yellow.update(self.player.coordinate)
+
+        self.blue.update(self.player.coordinate)
+
+        self.pink.update(self.player.coordinate)
 
 
     def check_for_events(self):
@@ -75,6 +95,7 @@ class Game():
 
     def run(self):
         while not self.finished:
+            self.fps.tick(200)
             self.check_for_events()
         #    self.check_on_map()
             self.update()
