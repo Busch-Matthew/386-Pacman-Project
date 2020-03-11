@@ -1,5 +1,5 @@
 # 386-Pacman-Project
-
+To play, run pacman.py
 Controls:
 
 Up: Up-Arrow
