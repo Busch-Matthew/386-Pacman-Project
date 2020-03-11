@@ -2,6 +2,7 @@ import pygame
 import pygame.math
 vector = pygame.math.Vector2
 from pygame.sprite import Sprite
+from map_attributes import Portal
 
 class Character(Sprite):
 
@@ -29,12 +30,39 @@ class Character(Sprite):
 
         self.intersection_list = intersectionList
 
+        self.imagesRegular = []
+        self.imagesDeath = []
         self.can_move = True
 
         self.steps = 0
+        self.direction_value = 0
+        self.imageCounter = 0
+        self.lives = 3
+        self.dead = False
+        self.animation_counter = 0
+        self.still = False
         #print(self.coordinate)
         #print(self.position)
         #print(self.wall_list)
+        self.load_images()
+    def load_images(self):
+        self.imagesRegular.append( [pygame.image.load(f'images/pac-neutral.bmp'), pygame.image.load(f'images/pac-left-2.bmp'),pygame.image.load(f'images/pac-left-3.bmp'), pygame.image.load(f'images/pac-left-2.bmp')])
+        self.imagesRegular.append( [pygame.image.load(f'images/pac-neutral.bmp'), pygame.image.load(f'images/pac-right-2.bmp'),pygame.image.load(f'images/pac-right-3.bmp'), pygame.image.load(f'images/pac-right-2.bmp')])
+        self.imagesRegular.append( [pygame.image.load(f'images/pac-neutral.bmp'), pygame.image.load(f'images/pac-up-2.bmp'),pygame.image.load(f'images/pac-up-3.bmp'), pygame.image.load(f'images/pac-up-2.bmp')])
+        self.imagesRegular.append( [pygame.image.load(f'images/pac-neutral.bmp'), pygame.image.load(f'images/pac-down-2.bmp'),pygame.image.load(f'images/pac-down-3.bmp'), pygame.image.load(f'images/pac-down-2.bmp')])
+
+        self.imagesDeath.append(pygame.image.load(f'images/death-1.bmp'))
+        self.imagesDeath.append(pygame.image.load(f'images/death-2.bmp'))
+        self.imagesDeath.append(pygame.image.load(f'images/death-3.bmp'))
+        self.imagesDeath.append(pygame.image.load(f'images/death-4.bmp'))
+        self.imagesDeath.append(pygame.image.load(f'images/death-5.bmp'))
+        self.imagesDeath.append(pygame.image.load(f'images/death-6.bmp'))
+        self.imagesDeath.append(pygame.image.load(f'images/death-7.bmp'))
+        self.imagesDeath.append(pygame.image.load(f'images/death-8.bmp'))
+        self.imagesDeath.append(pygame.image.load(f'images/death-9.bmp'))
+        self.imagesDeath.append(pygame.image.load(f'images/death-10.bmp'))
+        self.imagesDeath.append(pygame.image.load(f'images/death-11.bmp'))
+
 
     def check_wall(self):
         for foo in range(0,len(self.wall_list)):
@@ -43,13 +71,25 @@ class Character(Sprite):
         return True
 
     def draw(self):
-        self.screen.blit(self.image, self.rect)
+        #self.screen.blit(self.image, self.rect)
+        if self.dead == True:
+            print(self.animation_counter)
+            image_selection = int(self.animation_counter / 100)
+            self.screen.blit(self.imagesDeath[image_selection], self.rect)
+            self.animation_counter += 1
+            if self.animation_counter > 1099:
+                self.game.finished = True
+        else:
+            self.screen.blit(self.imagesRegular[self.direction_value][self.imageCounter], self.rect)
+
+        #self.screen.blit(self.imagesRegular[0][0], self.rect)
 
     def change_direction(self, direction):
         self.next_dirrection =  vector(direction)
 
     def move(self):
-
+        if self.still:
+            return
         if self.can_move:
 
             self.position +=  self.current_dirrection
@@ -61,20 +101,39 @@ class Character(Sprite):
         if self.next_dirrection == -1 * self.current_dirrection:
             self.current_dirrection = self.next_dirrection
         if ((self.position.x - self.map.left) % 25  == 0) and self.current_dirrection in [vector(1,0), vector(-1,0)]:
+            if self.imageCounter >= 3:
+                self.imageCounter = 0
+            else:
+                self.imageCounter  +=1
             if self.next_dirrection != vector(0,0) and self.coordinate in self.intersection_list :
                 self.current_dirrection = self.next_dirrection
             self.can_move = self.check_wall()
         if ((self.position.y - self.map.top) % 25  == 0) and self.current_dirrection in [vector(0,1), vector(0,-1)]:
+            if self.imageCounter >=3:
+                self.imageCounter = 0
+            else:
+                self.imageCounter +=1
             if self.next_dirrection != vector(0,0) and self.coordinate in self.intersection_list:
                 self.current_dirrection = self.next_dirrection
             self.can_move = self.check_wall()
 
+        if self.current_dirrection == vector(1,0):
+            self.direction_value = 1
+        if self.current_dirrection == vector(-1,0):
+            self.direction_value = 0
+        if self.current_dirrection == vector(0,-1):
+            self.direction_value = 2
+        if self.current_dirrection == vector(0,1):
+            self.direction_value = 3
 
-
+    def teleport(self, portal):
+        self.position = portal.exit_location
+        self.current_dirrection = portal.exit_velocity
 
     def update(self):
         self.move()
         self.draw()
+
 
         #print(self.coordinate)
 
