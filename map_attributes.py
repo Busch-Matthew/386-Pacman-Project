@@ -47,29 +47,63 @@ class PowerPellet(Sprite):
         self.draw_index +=1
         if self.draw_index < 50:
             pygame.draw.circle(self.screen, Pellet.YELLOW,(int(self.position.x + 13),int(self.position.y + 13)) , 7)
+
         self.draw_index +=1
         if self.draw_index > 100:
             self.draw_index = 0
 
 class Portal(Sprite):
-    def __init__(self, game, map, position, exit_position, exit_velocity):
+    ORANGE_LOCATION = None
+    ORANGE_EXIT_DIR = vector(0,0)
+    ORANGE_COLOR = (255,69,0)
+    BLUE_LOCATION = None
+    BLUE_EXIT_DIR = vector(0,0)
+    BLUE_COLOR = (0,0,255)
+    def __init__(self, game, map, position, exit_position, exit_velocity, tag = None):
+
         super().__init__()
 
         self.game = game
         self.map = map
+        self.tag = tag
         #self.screen = game.screen
         self.x_position = position.x * 25 + self.map.left
         self.y_position = position.y * 25 + self.map.top
-
+        self.position = vector(self.x_position, self.y_position)
         self.rect = pygame.Rect(self.x_position, self.y_position, 25, 25)
         self.imageRect = pygame.Rect(self.x_position, self.y_position,80,30)
         self.exit_location = vector(exit_position.x * 25 + self.map.left, exit_position.y * 25 + self.map.top)
 
         self.exit_velocity = vector(exit_velocity)
 
-    def get_transport_location(self):
+        if self.tag == 'O':
+            print(Portal.ORANGE_LOCATION)
+            Portal.ORANGE_LOCATION = self.position
+            print(Portal.ORANGE_LOCATION)
+            Portal.ORANGE_EXIT_DIR = self.exit_velocity
 
-        return self.transport_location
+        if self.tag == 'B':
+            Portal.BLUE_LOCATION = self.position
+            Portal.BLUE_EXIT_DIR = self.exit_velocity
+
+    def get_blue_location():
+
+        return Portal.BLUE_LOCATION
+
+    def get_blue_exit_dir():
+        return vector(Portal.BLUE_EXIT_DIR)
+
+    def get_orange_location():
+        return Portal.ORANGE_LOCATION
+
+    def get_orange_exit_dir():
+        return vector(Portal.ORANGE_EXIT_DIR)
+
+
+
+#    def get_transport_location(self):
+
+#        return self.transport_location
 
 
 class Fruit(Sprite):
@@ -170,7 +204,16 @@ class Map():
                     self.setPower(bar, foo)
         return wallList
 
-
+    def update_portals(self):
+        for portal in self.Portals.sprites():
+            if portal.tag == 'O':
+                portal.exit_location = portal.BLUE_LOCATION
+                portal.exit_velocity = portal.BLUE_EXIT_DIR
+                pygame.draw.circle(self.screen, (255,69,0),(int(portal.position.x + 13),int(portal.position.y+ 13)) , 7)
+            if portal.tag == 'B':
+                portal.exit_location = portal.ORANGE_LOCATION
+                portal.exit_velocity = portal.ORANGE_EXIT_DIR
+                pygame.draw.circle(self.screen, (0,0,255),(int(portal.position.x + 13),int(portal.position.y + 13)) , 7)
     def draw_portals(self):
         pygame.draw.rect(self.screen, (0,0,0), self.tunnel_left.imageRect)
         pygame.draw.rect(self.screen,(0,0,0), self.tunnel_right.imageRect)
@@ -191,6 +234,7 @@ class Map():
             powerPellet.draw()
         for fruit in self.Fruits.sprites():
             fruit.draw()
+        self.update_portals()
 
 
 

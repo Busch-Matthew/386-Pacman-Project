@@ -4,6 +4,52 @@ vector = pygame.math.Vector2
 from pygame.sprite import Sprite
 from map_attributes import Portal
 
+class Bullet():
+    ORANGE_LOACTION = None
+    ORANGE_EXIT_DIR =  None
+    ORANGE_COLOR = (255,69,0)
+    BLUE_LOCATION = None
+    BLUE_EXIT_DIR = None
+    BLUE_COLOR = (0,0,255)
+    def __init__ (self, game, pac, color):
+        self.game = game
+        self.map = game.map
+        self.screen = game.screen
+        self.position = vector(pac.position)
+        self.current_dirrection = vector(pac.current_dirrection)
+        self.coordinate = self.coordinate = (int((self.position.x - self.map.left)/ 25), int((self.position.y - self.map.top )/ 25))
+        self.spawnedPortal = False
+        self.tag = color
+        for portal in self.map.Portals.sprites():
+            if self.tag == portal.tag:
+                self.map.Portals.remove(portal)
+        if color == 'O':
+            self.color = Bullet.ORANGE_COLOR
+            Bullet.ORANGE_EXIT_DIR = -1 * self.current_dirrection
+        elif color == 'B':
+            self.color = Bullet.BLUE_COLOR
+            Bullet.BLUE_EXIT_DIR = -1 * self.current_dirrection
+
+    def move(self):
+        self.position +=  self.current_dirrection
+        #self.rect.topleft = self.position
+        self.coordinate = (int((self.position.x - self.map.left)/ 25), int((self.position.y - self.map.top )/ 25))
+
+    def draw(self):
+        pygame.draw.circle(self.screen, self.color,(int(self.position.x + 13),int(self.position.y + 13)) , 2)
+
+    def check_wall(self):
+        if self.coordinate in self.map.wall_list:
+                if self.spawnedPortal == False:
+                    self.map.Portals.add(Portal(self.game, self.map, self.coordinate - vector(self.current_dirrection), vector(1,1), vector(-1* self.current_dirrection), tag = self.tag))
+                    self.spawnedPortal = True
+                    self.current_dirrection = vector(0,0)
+
+    def update(self):
+        self.move()
+        self.draw()
+        self.check_wall()
+
 class Character(Sprite):
 
     def __init__(self, game, startX, startY):
@@ -16,9 +62,13 @@ class Character(Sprite):
         #adding walls for pacman at ghost spawn
         self.wall_list.append(vector(13,12))
         self.wall_list.append(vector(14,12))
+
+
         self.coordinate = vector(startX, startY)
         self.position = vector((startX * self.map.cell_width) + self.map.left, (startY * self.map.cell_height) + self.map.top)
 
+        self.startPosition = self.position
+        self.startCoordinate = self.coordinate
         self.image = pygame.image.load(f'images/PacManRight.bmp')
         self.image = pygame.transform.scale(self.image, (25, 25))
 
@@ -41,10 +91,16 @@ class Character(Sprite):
         self.dead = False
         self.animation_counter = 0
         self.still = False
+
+        self.bulletList = []
         #print(self.coordinate)
         #print(self.position)
         #print(self.wall_list)
         self.load_images()
+
+
+
+
     def load_images(self):
         self.imagesRegular.append( [pygame.image.load(f'images/pac-neutral.bmp'), pygame.image.load(f'images/pac-left-2.bmp'),pygame.image.load(f'images/pac-left-3.bmp'), pygame.image.load(f'images/pac-left-2.bmp')])
         self.imagesRegular.append( [pygame.image.load(f'images/pac-neutral.bmp'), pygame.image.load(f'images/pac-right-2.bmp'),pygame.image.load(f'images/pac-right-3.bmp'), pygame.image.load(f'images/pac-right-2.bmp')])
@@ -69,6 +125,13 @@ class Character(Sprite):
             if self.wall_list[foo] == vector(self.coordinate + self.current_dirrection):
                 return False
         return True
+
+    def reset(self):
+        
+        self.current_dirrection = vector(0,0)
+
+        self.position = vector(self.startPosition)
+        self.coordinate = vector(self.startCoordinate)
 
     def draw(self):
         #self.screen.blit(self.image, self.rect)
@@ -127,12 +190,24 @@ class Character(Sprite):
             self.direction_value = 3
 
     def teleport(self, portal):
-        self.position = portal.exit_location
-        self.current_dirrection = portal.exit_velocity
+        if portal.exit_location != None:
+            self.position = portal.exit_location
+            self.current_dirrection = portal.exit_velocity
+        for portal in self.map.Portals.sprites():
+            if portal.tag != None:
+                self.map.Portals.remove(portal)
+    def fire(self,color):
+        self.bulletList.append(Bullet(self.game, self, color))
 
     def update(self):
         self.move()
         self.draw()
+        for i in range(0,len(self.bulletList)):
+            self.bulletList[i].update()
+            if self.bulletList[i].spawnedPortal == True:
+                del self.bulletList[i]
+
+
 
 
         #print(self.coordinate)

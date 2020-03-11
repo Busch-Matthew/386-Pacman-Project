@@ -139,10 +139,10 @@ class Game():
                     self.score.update_highscore()
         portal_collision = pygame.sprite.spritecollideany(self.player, self.map.Portals)
         if portal_collision != None:
+            print ('COLLIDED')
             self.player.teleport(portal_collision)
+
         ghost_left_portal = pygame.sprite.spritecollideany(self.map.tunnel_left, self.Ghosts)
-
-
         if ghost_left_portal != None:
             print(ghost_left_portal)
             ghost_left_portal.position.x = 675
@@ -178,12 +178,16 @@ class Game():
                 if event.key == pygame.K_DOWN:
                     #self.player.current_dirrection = "DOWN"
                     self.player.change_direction(vector(0,1 ))
+                if event.key == pygame.K_z:
+                    self.player.fire('O')
+                if event.key == pygame.K_x:
+                    self.player.fire('B')
             elif e_type == QUIT:
                 self.finished = True
 
     def run(self):
         while not self.finished:
-            self.fps.tick(200)
+            self.fps.tick(180)
             self.check_for_events()
         #    self.check_on_map()
             self.update()
