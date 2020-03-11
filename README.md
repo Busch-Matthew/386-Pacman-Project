@@ -17,4 +17,5 @@ Orange-Portal : Z
 Known Issues: 
 - Shooting multiple portals simultaneously may cause unexpected behavior
 - Ghosts following PacMan around the corner may not properly update when too close
+- Collisions may over-calculate, resulting in losing more than one life
 
