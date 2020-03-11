@@ -3,10 +3,15 @@
 Controls:
 
 Up: Up-Arrow
+
 Down: Down-Arrow
+
 Left: Left-Arrow
+
 Right: Right-Arrow
+
 Blue-Portal: X
+
 Orange-Portal : Z
 
 Known Issues: 
